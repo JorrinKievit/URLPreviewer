@@ -16,7 +16,6 @@ import {
   GetPreviewImageData as GetPreviewURLData,
 } from "../../lib/types";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
-import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
 import Page from "../../components/Page";
 import ErrorAlert from "../../components/ErrorAlert";
 import { AnimatePresence, motion } from "framer-motion";
@@ -97,37 +96,27 @@ const ResultPage: NextPage = () => {
                 {data?.image && (
                   <MotionBox variants={itemVariants}>
                     <FullScreen handle={handle}>
-                      <Box
-                        position="relative"
-                        w="full"
-                        h={
-                          handle.active
-                            ? "full"
-                            : { base: 220, sm: 350, md: 400 }
-                        }
+                      <Tooltip
+                        label="Click to view the image in fullscreen!"
+                        hasArrow
                       >
-                        <Image
-                          src={`data:image/png;base64,${data?.image}`}
-                          alt="image"
-                          layout="fill"
-                        />
-                        <Icon
-                          as={
+                        <Box
+                          position="relative"
+                          w="full"
+                          h={
                             handle.active
-                              ? AiOutlineFullscreenExit
-                              : AiOutlineFullscreen
+                              ? "full"
+                              : { base: 220, sm: 350, md: 400 }
                           }
-                          right="0"
-                          top="0"
-                          position="absolute"
-                          w={10}
-                          h={10}
-                          mr={2}
-                          mt={2}
                           onClick={toggleFullScreen}
-                          color="blue.500"
-                        />
-                      </Box>
+                        >
+                          <Image
+                            src={`data:image/png;base64,${data?.image}`}
+                            alt="image"
+                            layout="fill"
+                          />
+                        </Box>
+                      </Tooltip>
                     </FullScreen>
                   </MotionBox>
                 )}

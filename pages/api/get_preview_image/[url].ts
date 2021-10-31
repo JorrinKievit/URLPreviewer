@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer";
 import { GetPreviewImageData } from "../../../lib/types";
+import chromium from "chrome-aws-lambda";
 
 type ErrorData = {
   error: unknown;
@@ -12,9 +13,15 @@ const handler = async (
   res: NextApiResponse<GetPreviewImageData | ErrorData>
 ) => {
   const { url } = req.query;
+  let browser = null;
 
   try {
-    const browser = await puppeteer.launch();
+    browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      ignoreHTTPSErrors: true,
+    });
     const page = await browser.newPage();
 
     page.setViewport({ width: 1920, height: 1080 });
@@ -24,11 +31,12 @@ const handler = async (
 
     const image: Buffer = (await page.screenshot({ type: "png" })) as Buffer;
     const b64Image = image.toString("base64");
-    await browser.close();
 
     res.status(200).json({ image: b64Image, title: title, url: pageURL });
   } catch (error) {
     res.status(500).json({ error: error });
+  } finally {
+    if (!browser) await browser.close();
   }
 };
 

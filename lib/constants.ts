@@ -8,19 +8,9 @@ import {
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { FullScreenProps, FullScreen } from "react-full-screen";
+import { QueryClient } from "react-query";
 
-export const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  // If the status code is not in the range 200-299,
-  // we still try to parse and throw it.
-  if (!res.ok) {
-    const error = new Error("An error occurred while fetching the data.");
-    throw error;
-  }
-
-  return res.json();
-};
+export const queryClient = new QueryClient();
 
 export const variants = {
   hidden: {

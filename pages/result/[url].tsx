@@ -4,22 +4,23 @@ import { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
 import React from "react";
-import useSWR from "swr";
 import {
-  fetcher,
   itemVariants,
   MotionBox,
-  MotionFullscreen,
   MotionHeading,
   MotionTable,
   variants,
 } from "../../lib/constants";
-import { GetPreviewImageData } from "../../lib/types";
+import {
+  ErrorData,
+  GetPreviewImageData as GetPreviewURLData,
+} from "../../lib/types";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
 import Page from "../../components/Page";
 import ErrorAlert from "../../components/ErrorAlert";
 import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "react-query";
 
 const ResultPage: NextPage = () => {
   const router = useRouter();
@@ -29,20 +30,23 @@ const ResultPage: NextPage = () => {
     handle.active ? handle.exit() : handle.enter();
   };
 
-  const { data, error } = useSWR<GetPreviewImageData>(
-    router.query.url
-      ? `/api/get_preview_image/${encodeURIComponent(
-          router.query.url as string
-        )}`
-      : "",
-    fetcher
+  const { isLoading, error, data } = useQuery<GetPreviewURLData, ErrorData>(
+    "PreviewURLData",
+    () =>
+      fetch(
+        router.query.url
+          ? `/api/get_preview_image/${encodeURIComponent(
+              router.query.url as string
+            )}`
+          : ""
+      ).then((res) => res.json())
   );
 
   return (
     <Page>
       <AnimatePresence exitBeforeEnter>
         <Container maxW="3xl" h="full">
-          {!data && !error ? (
+          {isLoading ? (
             <Progress size="lg" isIndeterminate top="50%" />
           ) : error ? (
             <ErrorAlert />

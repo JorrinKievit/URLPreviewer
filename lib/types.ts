@@ -3,3 +3,7 @@ export interface GetPreviewImageData {
   title: string;
   url: string;
 }
+
+export interface ErrorData {
+  error: unknown;
+}

@@ -111,7 +111,7 @@ const ResultPage: NextPage = () => {
                         }
                       >
                         <Image
-                          src={`data:image/png;base64,${data?.image}`}
+                          src={`data:image/webp;base64,${data?.image}`}
                           alt="image"
                           layout="fill"
                         />

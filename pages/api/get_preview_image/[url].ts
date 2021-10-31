@@ -1,6 +1,12 @@
+// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import type { NextApiRequest, NextApiResponse } from "next";
+import { ErrorData, GetPreviewImageData } from "../../../lib/types";
 import chromium from "chrome-aws-lambda";
 
-const handler = async (req: any, res: any) => {
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<GetPreviewImageData | ErrorData>
+) => {
   const { url } = req.query;
   let browser = null;
 
@@ -18,14 +24,14 @@ const handler = async (req: any, res: any) => {
     const title = await page.title();
     const pageURL = page.url();
 
-    const image: Buffer = (await page.screenshot({ type: "png" })) as Buffer;
+    const image: Buffer = (await page.screenshot({ type: "webp" })) as Buffer;
     const b64Image = image.toString("base64");
 
     res.status(200).json({ image: b64Image, title: title, url: pageURL });
   } catch (error) {
     res.status(500).json({ error: error });
   } finally {
-    if (browser !== null) await browser.close();
+    if (!browser !== null) await browser.close();
   }
 };
 

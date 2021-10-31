@@ -31,7 +31,7 @@ const handler = async (
   } catch (error) {
     res.status(500).json({ error: error });
   } finally {
-    if (!browser !== null) await browser.close();
+    if (!browser !== null) await browser?.close();
   }
 };
 

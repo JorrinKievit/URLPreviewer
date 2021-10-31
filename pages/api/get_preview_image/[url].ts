@@ -27,8 +27,8 @@ const handler = async (
     await browser.close();
 
     res.status(200).json({ image: b64Image, title: title, url: pageURL });
-  } catch (e) {
-    res.status(500).json({ error: e });
+  } catch (error) {
+    res.status(500).json({ error: error });
   }
 };
 

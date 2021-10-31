@@ -8,13 +8,14 @@ import useSWR from "swr";
 import {
   fetcher,
   itemVariants,
+  MotionBox,
   MotionFullscreen,
   MotionHeading,
   MotionTable,
   variants,
 } from "../../lib/constants";
 import { GetPreviewImageData } from "../../lib/types";
-import { useFullScreenHandle } from "react-full-screen";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
 import Page from "../../components/Page";
 import ErrorAlert from "../../components/ErrorAlert";
@@ -29,7 +30,11 @@ const ResultPage: NextPage = () => {
   };
 
   const { data, error } = useSWR<GetPreviewImageData>(
-    `/api/get_preview_image/${encodeURIComponent(router.query.url as string)}`,
+    router.query.url
+      ? `/api/get_preview_image/${encodeURIComponent(
+          router.query.url as string
+        )}`
+      : "",
     fetcher
   );
 
@@ -85,35 +90,43 @@ const ResultPage: NextPage = () => {
                   </Tbody>
                 </MotionTable>
 
-                <MotionFullscreen handle={handle} variants={itemVariants}>
-                  <Box
-                    position="relative"
-                    w="full"
-                    h={handle.active ? "full" : { base: 220, sm: 350, md: 400 }}
-                  >
-                    <Image
-                      src={`data:image/png;base64,${data?.image}`}
-                      alt="image"
-                      layout="fill"
-                    />
-                    <Icon
-                      as={
-                        handle.active
-                          ? AiOutlineFullscreenExit
-                          : AiOutlineFullscreen
-                      }
-                      right="0"
-                      top="0"
-                      position="absolute"
-                      w={10}
-                      h={10}
-                      mr={2}
-                      mt={2}
-                      onClick={toggleFullScreen}
-                      color="blue.500"
-                    />
-                  </Box>
-                </MotionFullscreen>
+                {data?.image && (
+                  <MotionBox variants={itemVariants}>
+                    <FullScreen handle={handle}>
+                      <Box
+                        position="relative"
+                        w="full"
+                        h={
+                          handle.active
+                            ? "full"
+                            : { base: 220, sm: 350, md: 400 }
+                        }
+                      >
+                        <Image
+                          src={`data:image/png;base64,${data?.image}`}
+                          alt="image"
+                          layout="fill"
+                        />
+                        <Icon
+                          as={
+                            handle.active
+                              ? AiOutlineFullscreenExit
+                              : AiOutlineFullscreen
+                          }
+                          right="0"
+                          top="0"
+                          position="absolute"
+                          w={10}
+                          h={10}
+                          mr={2}
+                          mt={2}
+                          onClick={toggleFullScreen}
+                          color="blue.500"
+                        />
+                      </Box>
+                    </FullScreen>
+                  </MotionBox>
+                )}
               </Stack>
             </motion.div>
           )}

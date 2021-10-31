@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 import { GetPreviewImageData } from "../../../lib/types";
 
 type ErrorData = {
-  error: string;
+  error: unknown;
 };
 
 const handler = async (
@@ -28,7 +28,7 @@ const handler = async (
 
     res.status(200).json({ image: b64Image, title: title, url: pageURL });
   } catch (e) {
-    res.status(500).json({ error: "Failed to fetch the given URL" });
+    res.status(500).json({ error: e });
   }
 };
 

@@ -12,6 +12,7 @@
     "@chakra-ui/react": "^1.6.10",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "axios": "^0.24.0",
     "chrome-aws-lambda": "^10.1.0",
     "formik": "^2.2.9",
     "framer-motion": "^5.0.0",

@@ -21,6 +21,7 @@ import Page from "../../components/Page";
 import ErrorAlert from "../../components/ErrorAlert";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "react-query";
+import axios from "axios";
 
 const ResultPage: NextPage = () => {
   const router = useRouter();
@@ -32,14 +33,17 @@ const ResultPage: NextPage = () => {
 
   const { isLoading, error, data } = useQuery<GetPreviewURLData, ErrorData>(
     "PreviewURLData",
-    () =>
-      fetch(
+    ({ signal }) =>
+      axios.get(
         router.query.url
           ? `/api/get_preview_image/${encodeURIComponent(
               router.query.url as string
             )}`
-          : ""
-      ).then((res) => res.json())
+          : "",
+        {
+          signal,
+        }
+      )
   );
 
   return (

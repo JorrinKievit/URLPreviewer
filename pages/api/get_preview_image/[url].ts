@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import puppeteer from "puppeteer";
 import { GetPreviewImageData } from "../../../lib/types";
 import chromium from "chrome-aws-lambda";
 

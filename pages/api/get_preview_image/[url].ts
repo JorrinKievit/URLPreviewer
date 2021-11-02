@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ErrorData, GetPreviewImageData } from "../../lib/types";
+import { ErrorData, GetPreviewImageData } from "../../../lib/types";
 import chromium from "chrome-aws-lambda";
 
 const handler = async (

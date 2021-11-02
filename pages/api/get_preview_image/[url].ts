@@ -24,7 +24,7 @@ const handler = async (
     const title = await page.title();
     const pageURL = page.url();
 
-    const image: Buffer = (await page.screenshot({ type: "webp" })) as Buffer;
+    const image: Buffer = (await page.screenshot({ type: "png" })) as Buffer;
     const b64Image = image.toString("base64");
 
     res.status(200).json({ image: b64Image, title: title, url: pageURL });

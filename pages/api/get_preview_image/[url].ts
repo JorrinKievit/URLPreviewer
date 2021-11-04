@@ -1,37 +1,49 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ErrorData, GetPreviewImageData } from "../../../lib/types";
-import chromium from "chrome-aws-lambda";
+import Pageres from "pageres";
+import { parser } from "html-metadata-parser";
 
 const handler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetPreviewImageData | ErrorData>
+  res: NextApiResponse<GetPreviewImageData | ErrorData | any>
 ) => {
-  const { url } = req.query;
-  let browser = null;
+  console.log(req.query);
+  const { height, width, url } = req.query;
+
+  let base64Image = "";
 
   try {
-    browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      ignoreHTTPSErrors: true,
+    await new Pageres({ delay: 2 })
+      .src(url as string, [`${width}x${height}`], { crop: true })
+      .run()
+      .then((stream) => {
+        base64Image = stream[0].toString("base64");
+      });
+
+    const metaData = await parser(url as string);
+
+    const metaObject = {
+      title:
+        (metaData.meta?.title ? metaData.meta.title : metaData.og?.title) ??
+        "Not set by requested page",
+      description:
+        (metaData.meta?.description
+          ? metaData.meta.description
+          : metaData.og?.description) ?? "Not set by requested page",
+      url: (metaData.meta?.url ? metaData.meta?.url : metaData.og?.url) ?? url,
+      site_name: metaData.og?.site_name ?? "Not set by requested page",
+    };
+
+    res.status(200).json({
+      image: base64Image,
+      title: metaObject.title,
+      description: metaObject.description,
+      url: metaObject.url,
+      site_name: metaObject.site_name,
     });
-    const page = await browser.newPage();
-
-    page.setViewport({ width: 1920, height: 1080 });
-    await page.goto(url as string, { waitUntil: "networkidle2" });
-    const title = await page.title();
-    const pageURL = page.url();
-
-    const image: Buffer = (await page.screenshot({ type: "png" })) as Buffer;
-    const b64Image = image.toString("base64");
-
-    res.status(200).json({ image: b64Image, title: title, url: pageURL });
   } catch (error) {
-    res.status(500).json({ error: error });
-  } finally {
-    if (!browser !== null) await browser?.close();
+    res.status(500).json({ error });
   }
 };
 

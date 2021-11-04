@@ -1,9 +1,17 @@
 import { Box, Container, Link, Stack } from "@chakra-ui/layout";
-import { Tbody, Td, Tr, Icon, Tooltip, Progress } from "@chakra-ui/react";
-import { NextPage } from "next";
+import {
+  Tbody,
+  Td,
+  Tr,
+  Icon,
+  Tooltip,
+  Progress,
+  Button,
+} from "@chakra-ui/react";
+import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   itemVariants,
   MotionBox,
@@ -13,6 +21,7 @@ import {
 } from "../../lib/constants";
 import {
   ErrorData,
+  GetPreviewImageData,
   GetPreviewImageData as GetPreviewURLData,
 } from "../../lib/types";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
@@ -29,25 +38,28 @@ const ResultPage: NextPage = () => {
     handle.active ? handle.exit() : handle.enter();
   };
 
-  const { isLoading, error, data } = useQuery<GetPreviewURLData, ErrorData>(
-    "PreviewURLData",
-    () =>
-      fetch(
-        router.query.url
-          ? `/api/get_preview_image/${encodeURIComponent(
-              router.query.url as string
-            )}`
-          : ""
-      ).then((res) => res.json())
+  const { isLoading, error, data, refetch, isRefetching } = useQuery<
+    GetPreviewURLData,
+    ErrorData
+  >(["PreviewURLData", router.query.url ? router.query.url : ""], () =>
+    fetch(
+      router.query.url
+        ? `/api/get_preview_image/${encodeURIComponent(
+            router.query.url as string
+          )}?height=${document.documentElement.clientHeight}&width=${
+            document.documentElement.clientWidth
+          }`
+        : ""
+    ).then((res) => res.json())
   );
 
   return (
     <Page>
       <AnimatePresence exitBeforeEnter>
         <Container maxW="3xl" h="full">
-          {isLoading ? (
+          {isLoading && !data && router.query.url ? (
             <Progress size="lg" isIndeterminate top="50%" />
-          ) : error ? (
+          ) : error && !data && router.query.url ? (
             <ErrorAlert />
           ) : (
             <motion.div
@@ -68,6 +80,16 @@ const ResultPage: NextPage = () => {
                   </Link>
                 </MotionHeading>
 
+                <Button
+                  colorScheme="blue"
+                  isLoading={isRefetching}
+                  loadingText="Loading..."
+                  onClick={
+                    refetch as React.MouseEventHandler<HTMLButtonElement>
+                  }
+                >
+                  Refresh
+                </Button>
                 <MotionTable variant="simple" variants={itemVariants}>
                   <Tbody>
                     <Tr>
@@ -87,8 +109,16 @@ const ResultPage: NextPage = () => {
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td>Title of page</Td>
-                      <Td>{data?.title ? data?.title : "N/A"}</Td>
+                      <Td>Site name</Td>
+                      <Td>{data?.site_name}</Td>
+                    </Tr>
+                    <Tr>
+                      <Td>Title</Td>
+                      <Td>{data?.title}</Td>
+                    </Tr>
+                    <Tr>
+                      <Td>Description</Td>
+                      <Td>{data?.description}</Td>
                     </Tr>
                   </Tbody>
                 </MotionTable>
@@ -102,12 +132,15 @@ const ResultPage: NextPage = () => {
                       >
                         <Box
                           position="relative"
-                          w="full"
-                          h={
-                            handle.active
+                          w={handle.active ? "full" : "full"}
+                          h={{
+                            base: handle.active
                               ? "full"
-                              : { base: 220, sm: 350, md: 400 }
-                          }
+                              : document.documentElement.clientHeight,
+                            md: handle.active
+                              ? "full"
+                              : document.documentElement.clientHeight / 2,
+                          }}
                           onClick={toggleFullScreen}
                         >
                           <Image

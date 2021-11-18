@@ -8,10 +8,10 @@ import {
   Progress,
   Button,
 } from "@chakra-ui/react";
-import { GetServerSideProps, NextPage } from "next";
+import { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   itemVariants,
   MotionBox,
@@ -21,7 +21,6 @@ import {
 } from "../../lib/constants";
 import {
   ErrorData,
-  GetPreviewImageData,
   GetPreviewImageData as GetPreviewURLData,
 } from "../../lib/types";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
@@ -41,18 +40,17 @@ const ResultPage: NextPage = () => {
   const { isLoading, error, data, refetch, isRefetching } = useQuery<
     GetPreviewURLData,
     ErrorData
-  >(["PreviewURLData", router.query.url ? router.query.url : ""], () =>
+  >(["PreviewURLData", router.query.url], () =>
     fetch(
       router.query.url
         ? `/api/get_preview_image/${encodeURIComponent(
             router.query.url as string
-          )}?height=${document.documentElement.clientHeight}&width=${
-            document.documentElement.clientWidth
-          }`
+          )}`
         : ""
     ).then((res) => res.json())
   );
 
+  console.log(isLoading, isRefetching);
   return (
     <Page>
       <AnimatePresence exitBeforeEnter>
@@ -90,6 +88,7 @@ const ResultPage: NextPage = () => {
                 >
                   Refresh
                 </Button>
+
                 <MotionTable variant="simple" variants={itemVariants}>
                   <Tbody>
                     <Tr>
@@ -132,7 +131,7 @@ const ResultPage: NextPage = () => {
                       >
                         <Box
                           position="relative"
-                          w={handle.active ? "full" : "full"}
+                          w="full"
                           h={{
                             base: handle.active
                               ? "full"

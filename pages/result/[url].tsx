@@ -52,7 +52,6 @@ const ResultPage: NextPage = () => {
     ).then((res) => res.json())
   );
 
-  console.log(isLoading, isRefetching);
   return (
     <Page>
       <AnimatePresence exitBeforeEnter>

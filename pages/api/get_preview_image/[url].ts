@@ -11,20 +11,32 @@ const handler = async (
   const { height, width, url } = req.query;
   let browser = null;
 
+  const extraArgs = [
+    "--disable-setuid-sandbox",
+    "--ignore-certificate-errors",
+    '--proxy-server="direct://"',
+    "--proxy-bypass-list=*",
+  ];
+
+  const args = chromium.args.concat(extraArgs);
+
   try {
     browser = await chromium.puppeteer.launch({
-      args: chromium.args,
+      args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
       ignoreHTTPSErrors: true,
     });
     const page = await browser.newPage();
 
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"
+    );
     page.setViewport({
       width: parseInt(width as string),
       height: parseInt(height as string),
     });
-    await page.goto(url as string, { waitUntil: "networkidle2" });
+    await page.goto(url as string);
 
     const image: Buffer = (await page.screenshot({ type: "png" })) as Buffer;
     const b64Image = image.toString("base64");

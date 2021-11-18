@@ -45,7 +45,9 @@ const ResultPage: NextPage = () => {
       router.query.url
         ? `/api/get_preview_image/${encodeURIComponent(
             router.query.url as string
-          )}`
+          )}?height=${document.documentElement.clientHeight}&width=${
+            document.documentElement.clientWidth
+          }`
         : ""
     ).then((res) => res.json())
   );

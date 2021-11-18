@@ -49,7 +49,13 @@ const ResultPage: NextPage = () => {
             document.documentElement.clientWidth
           }`
         : ""
-    ).then((res) => res.json())
+    ).then((res) => {
+      if (!res.ok) {
+        throw new Error();
+      } else {
+        return res.json();
+      }
+    })
   );
 
   return (

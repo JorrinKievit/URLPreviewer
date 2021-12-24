@@ -43,9 +43,9 @@ const ResultPage: NextPage = () => {
   >(["PreviewURLData", router.query.url], () =>
     fetch(
       router.query.url
-        ? `/api/get_preview_image/${encodeURIComponent(
+        ? `https://jorrinkievit-api.herokuapp.com/url-previewer?url=${encodeURIComponent(
             router.query.url as string
-          )}?height=${document.documentElement.clientHeight}&width=${
+          )}&height=${document.documentElement.clientHeight}&width=${
             document.documentElement.clientWidth
           }`
         : ""

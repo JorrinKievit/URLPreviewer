@@ -96,7 +96,11 @@ const ResultPage: NextPage = () => {
                   Refresh
                 </Button>
 
-                <MotionTable variant="simple" variants={itemVariants}>
+                <MotionTable
+                  variant="simple"
+                  variants={itemVariants}
+                  style={{ tableLayout: "fixed" }}
+                >
                   <Tbody>
                     <Tr>
                       <Td>Full URL</Td>

@@ -38,3 +38,4 @@ export const MotionFullscreen = motion<FullScreenProps & any>(FullScreen);
 export const MotionBox = motion<BoxProps>(Box);
 
 export const APP_TITLE = "URLPreviewer - A simple way to preview a URL";
+export const API_URL = "https://api.jorrinkievit.xyz";

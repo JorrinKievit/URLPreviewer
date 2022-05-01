@@ -13,6 +13,7 @@ import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
 import React from "react";
 import {
+  API_URL,
   itemVariants,
   MotionBox,
   MotionHeading,
@@ -43,7 +44,7 @@ const ResultPage: NextPage = () => {
   >(["PreviewURLData", router.query.url], () =>
     fetch(
       router.query.url
-        ? `https://jorrinkievit-api.herokuapp.com/url-previewer?url=${encodeURIComponent(
+        ? `${API_URL}/url-previewer?url=${encodeURIComponent(
             router.query.url as string
           )}&height=${document.documentElement.clientHeight}&width=${
             document.documentElement.clientWidth
